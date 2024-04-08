@@ -5,9 +5,6 @@ on:
     - cron: '0 0 * * 1'
   workflow_dispatch:
 
-env:
-  CARGO_TERM_COLOR: always
-
 permissions:
   contents: write
 
@@ -42,7 +39,7 @@ jobs:
 
     - name: Install build deps
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
-      run: sudo apt-get install -y curl libconfig-dev libdbus-1-dev libegl-dev libev-dev libgl-dev libepoxy-dev libpcre2-dev libpixman-1-dev libx11-xcb-dev libxcb1-dev libxcb-composite0-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-glx0-dev libxcb-image0-dev libxcb-present-dev libxcb-randr0-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xfixes0-dev libxext-dev meson ninja-build uthash-dev
+      run: sudo apt-get install -y libconfig-dev libdbus-1-dev libegl-dev libev-dev libgl-dev libepoxy-dev libpcre2-dev libpixman-1-dev libx11-xcb-dev libxcb1-dev libxcb-composite0-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-glx0-dev libxcb-image0-dev libxcb-present-dev libxcb-randr0-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xfixes0-dev libxext-dev meson ninja-build uthash-dev
 
     - name: Set up linuxdeploy
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
