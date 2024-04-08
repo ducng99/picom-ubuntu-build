@@ -55,7 +55,7 @@ jobs:
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
       run: |
         meson setup --buildtype=release build
-        meson configure -Dprefix=./appdir build
+        meson configure -Dprefix=$(pwd)/appdir build
         ninja -C build install
 
     - name: Package .appimage
