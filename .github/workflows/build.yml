@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get latest stable tag
+      id: stable-tag
+      run: |
+        TAG=$(curl -s "https://api.github.com/repos/yshui/picom/releases/latest" | grep -Po  '"tag_name": "\Kv[^"]*')
+        LAST_PROCESSED_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | grep -Po  '"tag_name": "\Kv[^"]*')
+
+        echo "Latest build: $TAG"
+        echo "Last built: $LAST_PROCESSED_TAG"
+
+        if [ "$TAG" != "$LAST_PROCESSED_TAG" ]; then
+          echo "should_run=true" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "New version found"
+        else
+          echo "should_run=false" > $GITHUB_OUTPUT
+        fi
+
+    - uses: actions/checkout@v4
+      if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
+      with:
+        repository: yshui/picom
+        ref: ${{ steps.stable-tag.outputs.tag }}
+
+    - name: Install build deps
+      if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
+      run: sudo apt-get install -y curl libconfig-dev libdbus-1-dev libegl-dev libev-dev libgl-dev libepoxy-dev libpcre2-dev libpixman-1-dev libx11-xcb-dev libxcb1-dev libxcb-composite0-dev libxcb-damage0-dev libxcb-dpms0-dev libxcb-glx0-dev libxcb-image0-dev libxcb-present-dev libxcb-randr0-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xfixes0-dev libxext-dev meson ninja-build uthash-dev
+
+    - name: Set up linuxdeploy
+      if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
+      run: |
+        curl -Lo linuxdeploy.appimage https://github.com/linuxdeploy/linuxdeploy/releases/latest/download/linuxdeploy-x86_64.AppImage
+        linuxdeploy.appimage --appimage-extract
+        mv squashfs-root linuxdeploy
+        ./linuxdeploy/AppRun --appdir ./appdir
+
+    - name: Build
+      if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
+      run: |
+        meson setup --buildtype=release build
+        meson configure -Dprefix=./appdir build
+        ninja -C build install
+
+    - name: Package .appimage
+      run: ./linuxdeploy/AppRun --appdir ./appdir --output appimage -i ./appdir/share/icons/hicolor/scalable/apps/compton.svg
+
+    - name: Create release
+      if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.stable-tag.outputs.tag }}
+        body: https://github.com/yshui/picom/releases/tag/${{ steps.stable-tag.outputs.tag }}
+        fail_on_unmatched_files: true
+        files: picom-x86_64.AppImage

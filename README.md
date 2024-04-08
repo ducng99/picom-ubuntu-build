@@ -1,1 +1,1 @@
-# picom-ubuntu-build
+Builds [picom](https://github.com/yshui/picom) into AppImage for Ubuntu using GitHub Action
