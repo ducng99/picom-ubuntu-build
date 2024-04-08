@@ -57,7 +57,7 @@ jobs:
         meson setup --buildtype=release build
         meson configure -Dprefix=$(pwd)/appdir/usr build
         ninja -C build install
-        cp ./appdir/usr/share/icons/hicolor/scalable/compton.svg ./appdir/usr/share/icons/hicolor/scalable/apps/picom.svg
+        cp ./appdir/usr/share/icons/hicolor/scalable/apps/compton.svg ./appdir/usr/share/icons/hicolor/scalable/apps/picom.svg
 
     - name: Package .appimage
       run: ./linuxdeploy/AppRun --appdir ./appdir --output appimage
