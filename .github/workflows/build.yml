@@ -60,7 +60,7 @@ jobs:
         cp ./appdir/usr/share/icons/hicolor/scalable/apps/compton.svg ./appdir/usr/share/icons/hicolor/scalable/apps/picom.svg
 
     - name: Package .appimage
-      run: ./linuxdeploy/AppRun --appdir ./appdir --output appimage
+      run: LDAI_OUTPUT=picom-x86_64.AppImage ./linuxdeploy/AppRun --appdir ./appdir --output appimage
 
     - name: Create release
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
