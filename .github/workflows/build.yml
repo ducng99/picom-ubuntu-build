@@ -45,7 +45,7 @@ jobs:
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
       run: |
         curl -Lo linuxdeploy.appimage https://github.com/linuxdeploy/linuxdeploy/releases/latest/download/linuxdeploy-x86_64.AppImage
-        linuxdeploy.appimage --appimage-extract
+        ./linuxdeploy.appimage --appimage-extract
         mv squashfs-root linuxdeploy
         ./linuxdeploy/AppRun --appdir ./appdir
 
