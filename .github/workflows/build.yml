@@ -55,11 +55,11 @@ jobs:
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
       run: |
         meson setup --buildtype=release build
-        meson configure -Dprefix=$(pwd)/appdir build
+        meson configure -Dprefix=$(pwd)/appdir/usr build
         ninja -C build install
 
     - name: Package .appimage
-      run: ./linuxdeploy/AppRun --appdir ./appdir --output appimage -i ./appdir/share/icons/hicolor/scalable/apps/compton.svg
+      run: ./linuxdeploy/AppRun --appdir ./appdir --output appimage -i ./appdir/usr/share/icons/hicolor/scalable/apps/compton.svg
 
     - name: Create release
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
