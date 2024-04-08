@@ -57,9 +57,10 @@ jobs:
         meson setup --buildtype=release build
         meson configure -Dprefix=$(pwd)/appdir/usr build
         ninja -C build install
+        cp ./appdir/usr/share/icons/hicolor/scalable/compton.svg ./appdir/usr/share/icons/hicolor/scalable/apps/picom.svg
 
     - name: Package .appimage
-      run: ./linuxdeploy/AppRun --appdir ./appdir --output appimage -i ./appdir/usr/share/icons/hicolor/scalable/apps/compton.svg
+      run: ./linuxdeploy/AppRun --appdir ./appdir --output appimage
 
     - name: Create release
       if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
@@ -68,4 +69,4 @@ jobs:
         tag_name: ${{ steps.stable-tag.outputs.tag }}
         body: https://github.com/yshui/picom/releases/tag/${{ steps.stable-tag.outputs.tag }}
         fail_on_unmatched_files: true
-        files: picom-x86_64.AppImage
+        files: *.AppImage
