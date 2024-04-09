@@ -11,7 +11,7 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Get latest stable tag
@@ -60,6 +60,7 @@ jobs:
         cp ./appdir/usr/share/icons/hicolor/scalable/apps/compton.svg ./appdir/usr/share/icons/hicolor/scalable/apps/picom.svg
 
     - name: Package .appimage
+      if: ${{ steps.stable-tag.outputs.should_run == 'true' }}
       run: LDAI_OUTPUT=picom-x86_64.AppImage ./linuxdeploy/AppRun --appdir ./appdir --output appimage
 
     - name: Create release
